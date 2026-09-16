@@ -24,6 +24,8 @@ origin and licences are in [`cases/`](cases/README.md).
 
 All rows use the same extraction, reranker and walk; only the embedder and its own
 re-fitted thresholds change. Small models only, all run on CPU in production.
+These rows were measured with the internal v3 causal extractor (see *Reproducing*);
+the rows anyone can reproduce today with the public v2 extractor are in the next table.
 
 | embedder | dim | ALL | en | de | es | fr | nl | tr | source |
 |---|---|---|---|---|---|---|---|---|---|
@@ -35,6 +37,20 @@ re-fitted thresholds change. Small models only, all run on CPU in production.
 
 Noise floor between two runs of the same configuration: 1.7 points (R11). Differences
 smaller than that are not reported as differences.
+
+### Public-model rows: what you can reproduce today
+
+Same 335 cases, thresholds, reranker and commit (`reasongraph` main `4f88153`, before the
+bounded bridge), with the public [`Berk/causal-span-pointer-v2`](https://huggingface.co/Berk/causal-span-pointer-v2)
+extractor and CPU embedders, run with [`eval/cause_at_1.py`](eval/cause_at_1.py):
+
+| embedder | cause@1 | vs the v3 row above |
+|---|---|---|
+| `paraphrase-multilingual-MiniLM-L12-v2` | 30.4% | -2.6 |
+| `multilingual-e5-large`, int8 ONNX | 40.0% | -2.4 |
+
+The only difference between the two tables is the extractor. Details in
+[`results/2026-09-17-public-cause-at-1.md`](results/2026-09-17-public-cause-at-1.md).
 
 Why the embedder moves the number: on real data the small production embedder seeds the
 gold cause directly in only 12% of questions, 74% of its top-5 seeds are noise from other
@@ -103,14 +119,14 @@ Each of these was run to completion and is written up in `results/`.
 
 ## Reproducing
 
-The evaluation scripts are being ported from the lab repository into [`eval/`](eval/) so
-they run against the public `reasongraph` package with no private paths. Two things to
-know before trusting a re-run:
+The evaluation scripts in [`eval/`](eval/) run against the installed `reasongraph`
+package with the case files from `cases/`; no private paths. `eval/README.md` maps each
+script to the experiment it came from. Two things to know before trusting a re-run:
 
 - The rows above were measured with ReasonGraph Cloud's causal extractor (v3), which is
   not yet public. The scripts default to the open
   [`Berk/causal-span-pointer-v2`](https://huggingface.co/Berk/causal-span-pointer-v2);
-  the v2 numbers will be added as their own row once measured, and the gap stated.
+  the v2 rows are the second table above; the gap is 2.4-2.6 points.
 - Vector search in the PostgreSQL backend is approximate (HNSW); two builds of the same
   index agree on 48 of 80 cases unless results are ordered with a content tie-break
   (W34, W36). `reasongraph >= 0.7.31` ties by content, so re-runs are repeatable.
