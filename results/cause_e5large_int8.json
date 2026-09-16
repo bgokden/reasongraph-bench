@@ -1,0 +1,19 @@
+{
+ "embed": "onnx-int8:intfloat/multilingual-e5-large",
+ "causal_model": "Berk/causal-span-pointer-v2",
+ "constants": {
+  "span_link_threshold": 0.975,
+  "dedup_threshold": 0.949,
+  "min_score": 0.75,
+  "min_ratio": 0.9
+ },
+ "cause_at_1": {
+  "ALL": 0.4,
+  "en": 0.387,
+  "de": 0.473,
+  "es": 0.333,
+  "fr": 0.174,
+  "nl": 0.533,
+  "tr": 0.476
+ }
+}

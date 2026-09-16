@@ -1,0 +1,19 @@
+{
+ "embed": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+ "causal_model": "Berk/causal-span-pointer-v2",
+ "constants": {
+  "span_link_threshold": 0.92,
+  "dedup_threshold": 0.88,
+  "min_score": 0.1,
+  "min_ratio": 0.45
+ },
+ "cause_at_1": {
+  "ALL": 0.304,
+  "en": 0.373,
+  "de": 0.291,
+  "es": 0.281,
+  "fr": 0.196,
+  "nl": 0.383,
+  "tr": 0.238
+ }
+}
