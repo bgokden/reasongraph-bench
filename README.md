@@ -77,8 +77,13 @@ surface-matching distractors (R44b, R45):
 
 60% of the hard vague questions still miss with the better embedder, so the residual is
 downstream of the embedder. The cause was missing edges between the walk's levels, not the
-context cap; a walk-bridge change lifts the MiniLM row from 33% to 73% (R45) and is being
-validated on the standing row before it ships (R46).
+context cap (R45). A walk-stage bridge that traces from every recalled fact fixes exactly
+that: on the vague probe the gold root reaches the model 33% -> 73% (MiniLM) and 40% -> 87%
+(harrier), and immediate-cause cause@1 on real-swap 335 goes 33.1% -> 50.7% (R46). It is
+**not shipped**: on the busy standing graph the same unbounded fan-out builds spurious
+cross-case bridges, root-cause recall at bi@6 drops 22.9% -> 17.9%, noise rises, and recall
+is 5-20x slower (R46, R15). A bounded bridge is the next experiment; it must pass all four
+rows, not the two it improves.
 
 ## What did not help
 
@@ -92,6 +97,8 @@ Each of these was run to completion and is written up in `results/`.
 | Separate forward/backward hop budgets | inert on this data: the total-hops cap always binds first | W37 |
 | Entity surface-form normalisation and containment linking | no root-recall gain; containment linked across unrelated cases 79% of the time | (reasongraph README, Models) |
 | Augmented training data for the causal extractor | 0.675 vs 0.70 F1 without it | causal-span-model |
+| Walk-bridge with unbounded fan-out | +17.6 cause@1 and +40/+47 on the vague probe, but -5 root recall at bi@6, more noise, 5-20x latency on the busy graph; held | R46, R15 |
+| Retraining the causal extractor on after/once/stems-from cues | recall on those cues unchanged (36% -> 37%, "after" still 0%) and CNC 0.705 -> 0.696; with the token gate off, the *old* model already extracted them. The gate was the bottleneck, not the pointer | R47, R50 |
 | Synthetic French as a proxy for real French | synthetic 25% vs real 24% cause@1 looked equal, but a +15 e5 gain on synthetic became -8 on a realistic pool; real French is a genuine weak cell | R33, R35 |
 
 ## Reproducing
