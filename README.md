@@ -98,8 +98,12 @@ that: on the vague probe the gold root reaches the model 33% -> 73% (MiniLM) and
 (harrier), and immediate-cause cause@1 on real-swap 335 goes 33.1% -> 50.7% (R46). It is
 **not shipped**: on the busy standing graph the same unbounded fan-out builds spurious
 cross-case bridges, root-cause recall at bi@6 drops 22.9% -> 17.9%, noise rises, and recall
-is 5-20x slower (R46, R15). A bounded bridge is the next experiment; it must pass all four
-rows, not the two it improves.
+is 5-20x slower (R46, R15). A **bounded** bridge (dead-ends only, fan-out 2, budget 3, at
+most 6 trace starts) keeps the gain and drops the cost -- against the same main: cause@1
+33.1% -> 46.3% (MiniLM) and 45.1% -> 63.0% (harrier), vague 33% -> 73% and 40% -> 80%,
+bi@6 root recall 22.9% -> 22.6% (inside the noise floor), wall time 1.1-1.3x (R46b). It
+shipped in `reasongraph` 0.7.40; the leaderboard above is the pre-bridge baseline and will
+be re-run on 0.7.40.
 
 ## What did not help
 
